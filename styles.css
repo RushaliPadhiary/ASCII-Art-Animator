@@ -209,9 +209,16 @@ body {
     .controls-panel {
         grid-template-columns: 1fr;
     }
+   
+    .view {
+        position: relative;   
+        overflow: visible;    
+    }
     
-    header h1 {
-        font-size: 2em;
+    .video-wrapper,
+    .ascii-wrapper {
+        position: relative;
+        top: -17.5px;         
     }
 }
 
