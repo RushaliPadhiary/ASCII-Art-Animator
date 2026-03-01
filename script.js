@@ -32,6 +32,8 @@ class ASCIIAnimator {
         this.lastFrameTime = 0;
         this.frameCount = 0;
         this.fps = 0;
+        this.asciiContainerWidth = 640;  
+        this.asciiContainerHeight = 360; 
         
         // Bind methods to maintain 'this' context
         this.init = this.init.bind(this);
@@ -40,6 +42,9 @@ class ASCIIAnimator {
         this.processFrame = this.processFrame.bind(this);
         this.updateFPS = this.updateFPS.bind(this);
         this.convertToASCII = this.convertToASCII.bind(this);
+        this.calculateFontSize = this.calculateFontSize.bind(this);
+        this.adjustAsciiFontSize = this.adjustAsciiFontSize.bind(this);
+
         
         // Initialize event listeners
         this.init();
@@ -53,7 +58,7 @@ class ASCIIAnimator {
         // Resolution change handler
         this.resolutionSelect.addEventListener('change', () => {
             if (this.isRunning) {
-                this.processFrame(); // Reprocess current frame with new resolution
+                this.adjustAsciiFontSize();  
             }
         });
         
@@ -148,6 +153,29 @@ class ASCIIAnimator {
         this.output.textContent = 'Camera stopped. Click Start to begin.';
     }
     
+    calculateFontSize() {
+        const [width, height] = this.resolutionSelect.value.split('x').map(Number);
+        const asciiWrapper = document.querySelector('.ascii-wrapper');
+        
+        if (!asciiWrapper) return 12;
+        
+        // Calculate font size to fit the container
+        const containerWidth = asciiWrapper.clientWidth;
+        const containerHeight = asciiWrapper.clientHeight;
+    
+        // Calculate based on width and height, take the smaller to ensure it fits both
+        const fontSizeByWidth = Math.floor(containerWidth / (width * 0.65)); // 0.65 is average character width ratio
+        const fontSizeByHeight = Math.floor(containerHeight / height);
+    
+        // Use the smaller font size and clamp between 6 and 24
+        return Math.min(Math.max(Math.min(fontSizeByWidth, fontSizeByHeight), 6), 24);
+    }
+
+    adjustAsciiFontSize() {
+        const fontSize = this.calculateFontSize();
+        this.output.style.fontSize = fontSize + 'px';
+    }
+    
     processFrame() {
         if (!this.isRunning) return;
         
@@ -170,18 +198,18 @@ class ASCIIAnimator {
                 // Set canvas dimensions to match desired ASCII resolution
                 this.canvas.width = width;
                 this.canvas.height = height;
-
-                //Save context state
+                
+                // Save context state
                 this.ctx.save();
-
-                //Flip horizontally for mirror effect
+                
+                // Flip horizontally for mirror effect
                 this.ctx.translate(width, 0);
                 this.ctx.scale(-1, 1);
                 
-                // Draw video frame to canvas
+                // Draw video frame to canvas (downsampling automatically happens here)
                 this.ctx.drawImage(this.video, 0, 0, width, height);
-
-                //Restore context state
+                
+                // Restore context state
                 this.ctx.restore();
                 
                 // Get pixel data
@@ -190,6 +218,9 @@ class ASCIIAnimator {
                 // Convert to ASCII and display
                 const asciiArt = this.convertToASCII(imageData, charset, brightness);
                 this.output.textContent = asciiArt;
+                
+                // Adjust font size to fit container
+                this.adjustAsciiFontSize();
             }
             
             this.lastFrameTime = now;
@@ -199,6 +230,7 @@ class ASCIIAnimator {
         // Continue the loop
         this.animationFrame = requestAnimationFrame(this.processFrame);
     }
+
     
     convertToASCII(imageData, charset, brightness) {
         const data = imageData.data;
@@ -260,4 +292,10 @@ class ASCIIAnimator {
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new ASCIIAnimator();
+});
+
+window.addEventListener('resize', () => {
+    if (window.asciiAnimator) {
+        window.asciiAnimator.adjustAsciiFontSize();
+    }
 });
