@@ -97,9 +97,9 @@ class ASCIIAnimator {
             // Request webcam access
             this.stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    width: { ideal: 640 },
-                    height: { ideal: 480 },
-                    facingMode: 'user'
+                   width: { ideal: 1280 }, 
+                   height: { ideal: 720 },   
+                   facingMode: 'user'
                 },
                 audio: false
             });
