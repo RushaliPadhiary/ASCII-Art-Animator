@@ -17,24 +17,6 @@ body {
     padding: 20px;
 }
 
-/* Header Styles */
-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 30px;
-}
-
-header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-header p {
-    font-size: 1.1em;
-    opacity: 0.9;
-}
-
 /* Main Content Layout */
 .main-content {
     display: flex;
@@ -77,6 +59,7 @@ header p {
     height: 100%;
     object-fit: cover;
     background: #2d2d2d;
+    transform: scaleX(-1);  
 }
 
 /* ASCII Output Wrapper */

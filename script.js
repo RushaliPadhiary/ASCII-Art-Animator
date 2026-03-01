@@ -170,9 +170,19 @@ class ASCIIAnimator {
                 // Set canvas dimensions to match desired ASCII resolution
                 this.canvas.width = width;
                 this.canvas.height = height;
+
+                //Save context state
+                this.ctx.save();
+
+                //Flip horizontally for mirror effect
+                this.ctx.translate(width, 0);
+                this.ctx.scale(-1, 1);
                 
-                // Draw video frame to canvas (downsampling automatically happens here)
+                // Draw video frame to canvas
                 this.ctx.drawImage(this.video, 0, 0, width, height);
+
+                //Restore context state
+                this.ctx.restore();
                 
                 // Get pixel data
                 const imageData = this.ctx.getImageData(0, 0, width, height);
